@@ -19,4 +19,14 @@
     <servlet-name>holaMundo</servlet-name>
     <url-pattern>/holaMundo</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>TareasServlet</display-name>
+    <servlet-name>TareasServlet</servlet-name>
+    <servlet-class>TareasServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TareasServlet</servlet-name>
+    <url-pattern>/TareasServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
