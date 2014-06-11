@@ -29,4 +29,14 @@
     <servlet-name>TareasServlet</servlet-name>
     <url-pattern>/TareasServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>meses</display-name>
+    <servlet-name>meses</servlet-name>
+    <servlet-class>meses</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>meses</servlet-name>
+    <url-pattern>/meses</url-pattern>
+  </servlet-mapping>
 </web-app>

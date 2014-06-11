@@ -1,5 +1,10 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import Kanban.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -8,85 +13,127 @@ import javax.servlet.http.HttpServletResponse;
 
 public class TareasServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+    
+	protected void doGet(HttpServletRequest request, 
+			HttpServletResponse response) throws ServletException, IOException {
+			response.setContentType("text/html");
+			PrintWriter writer = response.getWriter();
+			writer.print("<html>"
+					+ "<head>"
+					+ "<title>Add task</title>"
+					+ "</head>"
+					+ "<body>"
+					+ "<form method=\"POST\">"
+					+ "<table>"
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("text/html");
-		PrintWriter writer= response.getWriter();
-		writer.print(""
-				+ "<html>"
-				+ "<head>"
-				+ "<title>Agregar tarea</title>"
-				+ "</head>"
-				+ "<body>"
-				+ "<form method=\"post\">"
-    			+ "<table>"
-				+ "<tr>"
-				+ "<td>Título</td>"
-				+ "<td>"
-				+ "<input type=\"text\" name=\"titulo\">"
-				+ "</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td>Estado</td>"
-				+ "<td>"
-				+ "<input type=\"text\" name=\"estado\">"
-				+ "</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td>Prioridad</td>"
-				+ "<td>"
-				+ "<input type=\"text\" name=\"prioridad\">"
-				+ "</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td>Descripción</td>"
-				+ "<td>"
-				+ "<input type=\"text\" name=\"descripcion\">"
-				+ "</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td>Propietario</td>"
-				+ "<td>"
-				+ "<input type=\"text\" name=\"propietario\">"
-				+ "</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td>Categor�a</td>"
-				+ "<td>"
-				+ "<input type=\"text\" name=\"categoria\">"
-				+ "</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td>Fecha de entrega</td>"
-				+ "<td>"
-				+ "<input type=\"date\" name=\"fechaEntrega\">"
-				+ "</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td>"
-				+ "<input type=\"submit\" name=\"agregar\" value=\"Agregar Tarea\">"
-				+ "</td>"
-				+ "</tr>"
-				+ "</table>"
-				+ "</form>"
-				+ "</body>"
-				+ "</html>");
-		
+					+ "<tr>"
+					+ "<td>Title:</td>"
+					+ "<td>"
+					+ "<input type=\"text\"name=\"title\"/>"
+					+ "</td>"
+					+ "</tr>"
 
+					+ "<tr>"
+					+ "<td>Description:</td>"
+					+ "<td>"
+					+ "<input type=\"text\"name=\"description\"/>"
+					+ "</td>"
+					+ "</tr>"
+
+					+ "<tr>"
+					+ "<td>State:</td>"
+					+ "<td>"
+					+"<select name=\"state\">"
+					+ "<option value=\"BACKLOG\">Backlog</option>"
+					+ "<option value=\"TO_DO\">To do</option>"
+					+ "<option value=\"IN_PROGRESS\">In progress</option>"
+					+ "<option value=\"DONE\">Done</option>"
+					+ "</select>"
+					+ "</td>"
+					+ "</tr>"
+
+					+ "<tr>"
+					+ "<td>Category:</td>"
+					+ "<td>"
+					+ "<input type=\"text\"name=\"category\"/>"
+					+ "</td>"
+					+ "</tr>"
+
+					+ "<tr>"
+					+ "<td>Priority:</td>"
+					+ "<td>"
+					+ "<input type=\"text\"name=\"priority\"/>"
+					+ "</td>"
+					+ "</tr>"
+
+					+ "<tr>"
+					+ "<td>Owner:</td>"
+					+ "<td>"
+					+ "<input type=\"text\"name=\"owner\"/>"
+					+ "</td>"
+					+ "</tr>"
+
+					+ "<tr>"
+					+ "<td>Due date:</td>"
+					+ "<td>"
+					//+ "<input type=\"text\"name=\"dueDate\"/>"
+					+"<input type=\"text\" name=\"due_date\" value=\""
+					+ new Date() + "\"/>"
+					+ "</td>"
+					+ "</tr>"
+
+					+ "<tr>"
+					+ "<td>Add Task:</td>"
+					+ "<td>"
+					+ "<input type=\"submit\"value=\"Add Task\"/>"
+					+ "</td>"
+					+ "</tr>"
+
+					+ "</table>"
+					+ "</form>"
+					+ "</body>"
+					+ "</html>"
+					);
 	}
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void doPost(HttpServletRequest request, 
+			HttpServletResponse response) throws ServletException, IOException {
+		Task task = new Task();
+
+		task.setTitle(request.getParameter("title"));
+		task.setDescription(request.getParameter("description"));
+		task.setOwner(request.getParameter("owner"));
+		task.setCategory(new Category(request.getParameter("category")));
+
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				"EEE MMM d HH:mm:ss zzz yyyy");
+		try {
+			task.setDueDate(formatter.parse(request.getParameter("due_date")));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		try {
+			task.setState(State.valueOf(request.getParameter("state")));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			task.setPriority(Short.parseShort(request.getParameter("priority")));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		task.setCreateDate(new Date());
+
+		Program.dashboard.add(task);
+
 		response.setContentType("text/html");
-		PrintWriter writer= response.getWriter();
-		writer.print(""
-				+ "<html>"
-				+ "<head>"
-				+ "<title>Agregar Tarea</title>"
-				+ "</head>"
-				+ "<body>"
-				+ "Agregado :)"
-				+ "</body>"
-				+ "</html>");
-		
+		PrintWriter writer2 = response.getWriter();
+		writer2.print("<html><body>" + task.toHtml() + "</body></html>");
 	}
+
+
+
+
 
 }
